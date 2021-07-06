@@ -158,7 +158,9 @@ const removeNodesFromBeginning = (nodesAccessor, last, { orderColumn, ascOrDesc 
   const order = invertedOrderArray.length === 1 ? invertedOrderArray[0] : invertedOrderArray;
 
   const subquery = orderNodesBy(nodesAccessor.clone().clearOrder(), { orderColumn, ascOrDesc: order }).limit(last);
-  const result = nodesAccessor.clone().from(subquery.as('last_subquery')).clearSelect().clearWhere();
+
+  // change the alias of the subquery to the same as the original table name to fix the issue when use with joinRelated
+  const result = nodesAccessor.clone().from(subquery.as(nodesAccessor.tableName())).clearSelect().clearWhere();
   return result;
 };
 
